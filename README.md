@@ -1,20 +1,31 @@
 # Genreid Isaiah Estrada — Portfolio
 
-A responsive personal portfolio for GitHub Pages, built with plain HTML, CSS, and JavaScript. No framework, paid assets, external fonts, package installation, or build step is required.
+A recruiter-focused, responsive portfolio presenting applied AI, business applications, research, and people leadership. Built with plain HTML, CSS, and JavaScript, without paid assets, external fonts, runtime services, or a build dependency.
 
-## Preview
+## Preview and edit
 
-Serve this directory with any static web server, or open `index.html` directly in a browser. GitHub Pages can serve the files from the repository root.
+Serve this directory with any static server; GitHub Pages serves it from the repository root. Opening `index.html` directly also works.
 
-## Update the content
+- `index.html`: portfolio copy, project cards, project notes, research, and experience.
+- `resume.html`: printable professional overview. It intentionally uses city-level contact information rather than the full postal address from the supplied résumé.
+- `style.css`: responsive layout, colors, component styles, motion, and print layout.
+- `script.js`: filters, accessible native-dialog project notes, perspective switcher, canvas illustration, and motion controls. Content and inline project details remain available without JavaScript.
+- `assets/*.svg`: original, local placeholder project illustrations. They are labeled as concept previews and are not actual product screenshots or measured results. Replace with genuine captures and meaningful alt text when available. Video replacements should include poster images, captions where needed, and user-controlled playback.
 
-- Edit the introduction, project descriptions, skills, and profile links in `index.html`.
-- Replace `images/Sample Photo.png` to update the portrait; update the image dimensions and alternative text if needed.
-- Change the colors and font stacks in the `:root` block in `style.css`.
-- `script.js` highlights the current navigation section and updates the copyright year. The site remains usable without JavaScript.
+The supplied CV and résumé are the source of the career content. Academic work, testing-stage personal projects, and planning-stage concepts are explicitly distinguished. No performance, revenue, accuracy, employment, or deployment outcomes have been invented. Public source links are included for hierarchical document processing and NEAT Pong. The Pong project notes retain disclosure of the repository's educational references and AI-assisted portions. There is no fabricated publication URL; research availability is described as listed in the CV.
 
-The project graphics are original CSS/SVG concept illustrations, not screenshots. The original project topics have been preserved. Placeholder project and LinkedIn URLs were removed; add verified project-specific repository URLs and a real LinkedIn URL when available. Current external links point to the owner's GitHub profile and repository list.
+## Asset caching
 
-## Accessibility and responsiveness
+`index.html` and `resume.html` use versioned CSS and JavaScript URLs. Whenever either asset changes, update the version in both HTML files so returning visitors load the matching design. Versioning changes the requested cache key; a previously cached HTML page may still require a refresh.
 
-The layout adapts from a three-column desktop project grid to one column on mobile. Semantic landmarks, descriptive image text, a keyboard skip link, visible focus indicators, and reduced-motion support are included.
+## Motion and accessibility
+
+- The global motion button pauses the decorative animation. The operating system's reduced-motion preference is respected immediately, including changes made while the page is open.
+- Canvas rendering stops when its scene is outside the viewport or the tab is hidden. Device pixel ratio is capped at 2.
+- Project filters expose pressed states and a live result count. Project notes use native dialog focus containment, Escape-to-close, and focus restoration; native details are the no-JavaScript fallback.
+- All content remains readable without animation or JavaScript. Navigation uses real anchors, headings follow a logical outline, and keyboard focus is visible.
+- The project previews and moving canvas are decorative and hidden from assistive technology.
+
+## Content maintenance
+
+Update dates and project stages as the underlying work progresses. Keep résumé and portfolio entries consistent. Link to a thesis only after obtaining a verified public URL. Replace preview images with authorized project media; do not present illustration values as evidence of results.
