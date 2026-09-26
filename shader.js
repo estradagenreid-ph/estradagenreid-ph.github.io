@@ -3,15 +3,11 @@
 (() => {
   const canvas = document.getElementById('shader-canvas');
   if (!canvas) return;
-  const scene = canvas.closest('.hero-system');
-  const controls = scene.querySelector('.shader-controls');
-  const button = scene.querySelector('.motion-toggle');
-  const home = canvas.parentElement;
   const ambient = document.querySelector('.ambient-field');
   const journey = document.querySelector('.visual-journey');
   const journeyButton = journey.querySelector('button');
   const chapters = [
-    { element: document.querySelector('.hero'), mode: 0, label: 'Introduction', strength: .5, speed: 1, opacity: .12 },
+    { element: document.querySelector('.hero'), mode: 0, strength: .4, speed: .55, opacity: 0 },
     { element: document.getElementById('work'), mode: 0, label: 'Work · Flow', strength: .4, speed: .55, opacity: .12 },
     { element: document.getElementById('games'), mode: 1, label: 'Game Development · Terrain', strength: .7, speed: .65, opacity: .32 },
     { element: document.getElementById('research'), mode: 2, label: 'Research · Signal', strength: .4, speed: .35, opacity: .12 },
@@ -23,7 +19,7 @@
   let weights = [1, 0, 0], targetWeights = [1, 0, 0];
   const preference = matchMedia('(prefers-reduced-motion: reduce)');
   let gl, program, buffer, uniforms;
-  let frame = 0, last = 0, elapsed = 0, visible = true, paused = false, lost = false;
+  let frame = 0, last = 0, elapsed = 0, visible = false, paused = false, lost = false;
   let mode = 0, intensity = .5, pointer = [.5, .5], savedTime = 0;
   const vertex = `attribute vec2 position;
     void main(){gl_Position=vec4(position,0.0,1.0);}`;
@@ -79,11 +75,9 @@
     }`;
   function fallback() {
     cancelAnimationFrame(frame); frame = 0;
-    canvas.hidden = true; controls.hidden = true;
-    button.hidden = true;
+    canvas.hidden = true;
     journey.hidden = true;
-    scene.querySelector('.shader-fallback-note').hidden = false;
-    scene.dataset.renderer = 'static';
+    ambient.dataset.renderer = 'static';
   }
   function compile(type, source) {
     const shader = gl.createShader(type); gl.shaderSource(shader, source); gl.compileShader(shader);
@@ -105,16 +99,15 @@
       gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1,-1, 1,-1, -1,1, -1,1, 1,-1, 1,1]), gl.STATIC_DRAW);
       const position = gl.getAttribLocation(program, 'position'); gl.enableVertexAttribArray(position); gl.vertexAttribPointer(position, 2, gl.FLOAT, false, 0, 0);
       uniforms = Object.fromEntries(['resolution','pointer','time','weights','intensity'].map(name => [name, gl.getUniformLocation(program, name)]));
-      canvas.hidden = false; controls.hidden = false; button.hidden = false;
-      scene.querySelector('.shader-fallback-note').hidden = true;
-      scene.dataset.renderer = 'webgl';
+      canvas.hidden = false;
+      ambient.dataset.renderer = 'webgl';
       journey.hidden = chapter === 0;
       return true;
     } catch { fallback(); return false; }
   }
   function stopped() { return paused || preference.matches || !visible || document.hidden || document.body.classList.contains('dialog-open') || lost; }
   function draw() {
-    if (!program || lost || scene.dataset.renderer !== 'webgl') return;
+    if (!program || lost || !visible || ambient.dataset.renderer !== 'webgl') return;
     gl.viewport(0, 0, canvas.width, canvas.height);
     gl.uniform2f(uniforms.resolution, canvas.width, canvas.height);
     gl.uniform2f(uniforms.pointer, pointer[0], pointer[1]);
@@ -135,14 +128,11 @@
     frame = requestAnimationFrame(loop);
   }
   function sync() {
-    button.disabled = preference.matches;
-    button.textContent = preference.matches ? 'Reduced motion' : paused ? 'Resume motion ▷' : 'Pause motion Ⅱ';
-    button.setAttribute('aria-pressed', String(paused || preference.matches));
     journeyButton.disabled = preference.matches;
-    journeyButton.textContent = preference.matches ? 'Reduced motion' : paused ? 'Resume visuals' : 'Pause visuals';
+    journeyButton.textContent = preference.matches ? 'Reduced motion' : paused ? 'Resume background' : 'Pause background';
     journeyButton.setAttribute('aria-pressed', String(paused || preference.matches));
     if (stopped()) { cancelAnimationFrame(frame); frame = 0; last = 0; draw(); }
-    else if (!frame && scene.dataset.renderer === 'webgl') frame = requestAnimationFrame(loop);
+    else if (!frame && ambient.dataset.renderer === 'webgl') frame = requestAnimationFrame(loop);
   }
   function resize() {
     if (canvas.hidden) return;
@@ -155,7 +145,6 @@
   function selectMode(value) {
     mode = value; targetWeights = [0, 1, 2].map(i => i === mode ? 1 : 0);
     if (stopped()) weights = [...targetWeights];
-    scene.querySelectorAll('[data-field]').forEach(item => item.setAttribute('aria-pressed', String(Number(item.dataset.field) === mode)));
   }
   function updateChapter() {
     chapterFrame = 0;
@@ -169,11 +158,8 @@
     const state = chapters[chapter];
     document.body.dataset.visualChapter = state.element.id || 'intro';
     document.body.style.setProperty('--field-opacity', state.opacity);
-    journey.querySelector('.journey-label').textContent = state.label;
-    journey.hidden = chapter === 0 || scene.dataset.renderer !== 'webgl';
-    (chapter === 0 ? home : ambient).prepend(canvas);
-    visible = true; pointer = [.5, .5]; speed = state.speed; intensity = state.strength;
-    document.getElementById('field-intensity').value = Math.round(intensity * 100);
+    journey.hidden = chapter === 0 || ambient.dataset.renderer !== 'webgl';
+    visible = chapter > 0; speed = state.speed; intensity = state.strength;
     selectMode(state.mode); resize(); sync();
   }
   const scheduleChapter = () => { if (!chapterFrame) chapterFrame = requestAnimationFrame(updateChapter); };
@@ -181,24 +167,10 @@
   window.addEventListener('resize', scheduleChapter, { passive: true });
   // Filters and expandable project details alter section positions without scrolling.
   if ('ResizeObserver' in window) new ResizeObserver(scheduleChapter).observe(document.querySelector('main'));
-  button.addEventListener('click', () => { paused = !paused; sync(); });
   journeyButton.addEventListener('click', () => { paused = !paused; sync(); });
-  scene.querySelectorAll('[data-field]').forEach(item => item.addEventListener('click', () => {
-    selectMode(Number(item.dataset.field)); draw();
-  }));
-  document.getElementById('field-intensity').addEventListener('input', event => { intensity = Number(event.target.value) / 100; draw(); });
-  const updatePointer = event => {
-    const rect = canvas.getBoundingClientRect();
-    pointer = [Math.max(0, Math.min(1, (event.clientX - rect.left) / rect.width)), 1 - Math.max(0, Math.min(1, (event.clientY - rect.top) / rect.height))];
-    // Static frames remain static unless the visitor explicitly changes the field controls.
-    if (stopped()) return;
-  };
-  canvas.addEventListener('pointermove', updatePointer, { passive: true });
-  canvas.addEventListener('pointerleave', () => { pointer = [.5, .5]; });
   preference.addEventListener('change', sync); document.addEventListener('visibilitychange', sync); document.addEventListener('portfolio:dialog', sync);
   canvas.addEventListener('webglcontextlost', event => { event.preventDefault(); lost = true; savedTime = elapsed; fallback(); });
   canvas.addEventListener('webglcontextrestored', () => { lost = false; elapsed = savedTime; if (initialize()) { resize(); sync(); } });
-  if ('IntersectionObserver' in window) new IntersectionObserver(entries => { visible = chapter > 0 || entries[0].isIntersecting; sync(); }, { threshold: 0 }).observe(home);
   if ('ResizeObserver' in window) new ResizeObserver(resize).observe(canvas); else window.addEventListener('resize', resize);
   window.addEventListener('pagehide', () => { cancelAnimationFrame(frame); cancelAnimationFrame(chapterFrame); frame = 0; chapterFrame = 0; last = 0; });
   window.addEventListener('pageshow', () => { updateChapter(); sync(); });
