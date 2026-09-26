@@ -19,9 +19,9 @@
     <meta property="og:type" content="website" />
     <title>Genreid Isaiah Estrada | AI, Business &amp; Technology</title>
     <link rel="icon" href="favicon.svg" type="image/svg+xml" />
-    <link rel="stylesheet" href="style.css?v=journey-20260926" />
-    <script src="script.js?v=journey-20260926" defer=""></script>
-    <script src="shader.js?v=journey-20260926" defer=""></script>
+    <link rel="stylesheet" href="style.css?v=portrait-20260926" />
+    <script src="script.js?v=portrait-20260926" defer=""></script>
+    <script src="shader.js?v=portrait-20260926" defer=""></script>
   </head>
   <body>
     <a class="skip-link" href="#main">Skip to content</a>
@@ -38,14 +38,6 @@
         <div class="hero-grid container">
           <div class="hero-copy">
             <div class="hero-identity">
-              <img
-                class="hero-portrait"
-                src="assets/portrait.webp"
-                width="240"
-                height="346"
-                alt="Genreid Isaiah Estrada"
-                fetchpriority="high"
-              />
               <p class="eyebrow">
                 GENREID ISAIAH ESTRADA<span>Maple Ridge, BC · Business &amp; technology</span>
               </p>
@@ -68,32 +60,16 @@
               ><a href="mailto:estradagenreid@gmail.com">Email ↗</a>
             </div>
           </div>
-          <div class="hero-system" aria-label="Interactive generative visual">
-            <div class="system-top">
-              <span class="mono">INTERACTIVE FIELD / 001</span
-              ><button class="motion-toggle" type="button" hidden="" aria-pressed="false">
-                Pause motion Ⅱ
-              </button>
-            </div>
-            <div class="shader-scene">
-              <canvas id="shader-canvas" aria-hidden="true"></canvas>
-              <div class="shader-overlay" aria-hidden="true">
-                <span>ORDER FROM<br /><em>complexity.</em></span
-                ><span class="field-coordinate">MOVE TO EXPLORE · SCROLL TO DISCOVER</span>
-              </div>
-            </div>
-            <div class="shader-controls" hidden="">
-              <div class="field-modes" role="group" aria-label="Visual style">
-                <button type="button" data-field="0" aria-pressed="true">Flow</button
-                ><button type="button" data-field="1" aria-pressed="false">Terrain</button
-                ><button type="button" data-field="2" aria-pressed="false">Signal</button>
-              </div>
-              <label class="field-intensity"
-                >Intensity <input id="field-intensity" type="range" min="0" max="100" value="50"
-              /></label>
-            </div>
-            <p class="shader-fallback-note" hidden="">Static field preview</p>
-          </div>
+          <figure class="hero-portrait-panel">
+            <img
+              class="hero-portrait"
+              src="images/Portrait.png"
+              alt="Genreid Isaiah Estrada"
+              width="416"
+              height="599"
+              fetchpriority="high"
+            />
+          </figure>
         </div>
         <div class="hero-proof container">
           <div>
@@ -1233,14 +1209,14 @@
           <div class="experience-grid">
             <div class="timeline">
               <article>
-                <p class="card-overline">CITY OF MAPLE RIDGE <span>MAY 2025–PRESENT</span></p>
+                <p class="card-overline">CITY OF MAPLE RIDGE <span>APRIL 2025–PRESENT</span></p>
                 <h3>Event Services Supervisor</h3>
                 <p>
                   Lead front-of-house teams, volunteers, and service delivery for theatre events.
                 </p>
               </article>
               <article>
-                <p class="card-overline">CITY OF MAPLE RIDGE <span>MAY 2025–PRESENT</span></p>
+                <p class="card-overline">CITY OF MAPLE RIDGE <span>APRIL 2025–PRESENT</span></p>
                 <h3>Bartender</h3>
                 <p>Customer service and team coordination in live event operations.</p>
               </article>
@@ -1347,10 +1323,11 @@
       </div>
     </dialog>
 
-    <div class="ambient-field" aria-hidden="true"></div>
+    <div class="ambient-field" aria-hidden="true">
+      <canvas id="shader-canvas" aria-hidden="true"></canvas>
+    </div>
     <div class="visual-journey" hidden="">
-      <span class="journey-label">Work · Flow</span
-      ><button type="button" class="journey-toggle" aria-pressed="false">Pause visuals</button>
+      <button type="button" class="journey-toggle" aria-pressed="false">Pause background</button>
     </div>
   </body>
 </html>
