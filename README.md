@@ -8,6 +8,10 @@ Serve the repository root with any static HTTP server. GitHub Pages serves the s
 
 ## Project media
 
+The Featured Projects section highlights PROJECT ALFHA before the complete project grid. It uses the existing `alfha` gallery and repository link, so the gallery retains one metadata entry per project. Add future highlights as featured articles pointing to existing gallery IDs. The hero action leads to this section; the Work navigation link still leads to the complete grid.
+
+The header uses a plain Genreid Estrada wordmark. `assets/site-icon.svg` is a simple serif E browser icon; the former `favicon.svg` monogram is removed. All four navigation links remain visible on mobile, with a dedicated navigation row at narrower widths.
+
 All 28 uploaded project files are represented in the gallery. The source files under `images/` are preserved. Optimized 900px WebP previews in `assets/gallery/` keep gallery browsing lightweight. Full-resolution PNGs load when their gallery slide is selected. The two large Pong GIFs load **only** after selecting Play clip; Stop clip restores the still poster. Closing, navigating, hiding the tab, or enabling reduced motion stops playback. Game concept artwork is explicitly labeled as placeholder artwork, not gameplay.
 
 | Project | Original folder | Media |

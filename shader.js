@@ -8,6 +8,7 @@
   const journeyButton = journey.querySelector('button');
   const chapters = [
     { element: document.querySelector('.hero'), mode: 0, strength: .4, speed: .55, opacity: 0 },
+    { element: document.getElementById('featured'), mode: 2, strength: .3, speed: .3, opacity: .1 },
     { element: document.getElementById('work'), mode: 0, label: 'Work · Flow', strength: .4, speed: .55, opacity: .12 },
     { element: document.getElementById('games'), mode: 1, label: 'Game Development · Terrain', strength: .7, speed: .65, opacity: .32 },
     { element: document.getElementById('research'), mode: 2, label: 'Research · Signal', strength: .4, speed: .35, opacity: .12 },
