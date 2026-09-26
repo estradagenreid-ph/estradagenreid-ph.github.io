@@ -8,7 +8,7 @@ Serve the repository root with any static HTTP server. GitHub Pages serves the s
 
 ## Project media
 
-All 25 uploaded project files are represented in the gallery. The source files under `images/` are preserved. Optimized 900px WebP previews in `assets/gallery/` total approximately 497 KB. Full-resolution PNGs load when their gallery slide is selected. The two large Pong GIFs load **only** after selecting Play clip; Stop clip restores the still poster. Closing, navigating, hiding the tab, or enabling reduced motion stops playback. Game concept artwork is explicitly labeled as placeholder artwork, not gameplay.
+All 28 uploaded project files are represented in the gallery. The source files under `images/` are preserved. Optimized 900px WebP previews in `assets/gallery/` keep gallery browsing lightweight. Full-resolution PNGs load when their gallery slide is selected. The two large Pong GIFs load **only** after selecting Play clip; Stop clip restores the still poster. Closing, navigating, hiding the tab, or enabling reduced motion stops playback. Game concept artwork is explicitly labeled as placeholder artwork, not gameplay.
 
 | Project | Original folder | Media |
 | --- | --- | --- |
@@ -21,6 +21,7 @@ All 25 uploaded project files are represented in the gallery. The source files u
 | Corporate SWOT Advisor | images/SWOT Analyzer | 3 screenshots |
 | Canada Trust Wealth | images/Trustwealth | 4 screenshots |
 | VectorHire | images/VectorHire | 1 screenshot |
+| WealthMind AI | images/Wealthmind | 3 screenshots |
 | Project AGIMAT / Project Arena | assets/agimat.svg / assets/arena.svg | 2 original vector placeholders |
 
 Gallery metadata is in each card's `.gallery-items` links in `index.html`: `href` points to the original, `data-caption` names the scene, `data-kind` labels its provenance, and the nested image is the optimized preview. GIF entries have `data-animation="true"` and `data-poster`. Add media here to include it in per-project and all-project views automatically. Use the project's existing `data-gallery-id`; put verified source links in `.repo-link`. Only the three verified public project repositories are linked (chunking, Pong, ALFHA).
@@ -31,7 +32,11 @@ The gallery provides thumbnails, a project selector, previous/next, arrow/Home/E
 
 `shader.js` renders an original fragment shader: four-octave fractional Brownian noise with domain warping, signed contour distance, radial terrain, and wave interference. Derivative-based antialiasing is used where supported. Flow, Terrain, and Signal modes, pointer movement, and a keyboard-operable intensity slider change the field.
 
-Performance limits: one render pass, no textures or post-processing, 30fps cap, device pixel ratio capped at 1.25, backing resolution at most 800 × 520. Rendering stops when offscreen, in a hidden tab, or behind an open gallery. Pause freezes automatic motion. Reduced-motion preferences produce a static frame, while explicit style/intensity changes remain usable. Unsupported WebGL or failed compilation uses CSS artwork; lost contexts fall back and can restore.
+Performance limits: one render pass, no textures or post-processing, 30fps cap, device pixel ratio capped at 1.25, backing resolution at most 800 × 520. The same canvas moves from the hero to a softly masked background as the reader moves through sections. No second WebGL context is created. Rendering stops when the hero visual is offscreen before the first chapter, in a hidden tab, or behind an open gallery. Pause freezes automatic motion. Reduced-motion preferences produce a static frame, while explicit style/intensity changes remain usable. Unsupported WebGL or failed compilation uses CSS artwork; lost contexts fall back and can restore.
+
+The reading position (upper third of the viewport) selects the chapter: Flow for applied work and approach, Terrain for game worlds, Signal for research, then progressively slower Flow for experience and contact. Field weights crossfade over time; chapter opacity keeps text on stable, readable surfaces. The floating chapter indicator provides a persistent pause control. Paused and reduced-motion modes update once on chapter changes without continuous animation. Scroll events schedule a single layout read per animation frame; no scroll interception.
+
+Academic applications (InsightBot, Canada Trust Wealth, VectorHire, SEO Sim, Corporate SWOT Advisor, and WealthMind AI) are credited to Google AI Studio. Pong retains its Python/NEAT/PyGame attribution. The optimized introduction portrait comes from images/Portrait.png.
 
 ## Editing
 

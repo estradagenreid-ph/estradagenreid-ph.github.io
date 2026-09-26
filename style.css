@@ -485,3 +485,27 @@ select:focus-visible, input:focus-visible, .gallery-stage:focus-visible { outlin
 }
 @media(prefers-reduced-motion:reduce) { .project-card:hover, .game-card:hover .game-visual>img { transform: none; } }
 @media print { .hero-system, .games .project-details, .open-gallery-cover, .browse-gallery, .gallery-dialog { display: none !important; } }
+
+/* A portrait introduction and a section-aware field that stays behind the content. */
+.hero-identity { display: flex; align-items: center; gap: 22px; margin-bottom: 30px; }
+.hero-portrait { width: 92px; height: 112px; object-fit: cover; object-position: center 18%; border-radius: 46px 46px 12px 12px; border: 1px solid #b9cba16b; background: #dce6f3; }
+.hero-identity .eyebrow { margin: 0; color: #d2e0c4; line-height: 1.8; }
+.hero-identity .eyebrow span { display: block; margin-top: 7px; font: 12px/1.6 Arial, sans-serif; letter-spacing: 0; color: #b9c7b6; }
+.build-credit { color: #4d6248; font: 11px/1.6 Arial, sans-serif; margin: 12px 0 0; }
+.hero { isolation: isolate; }
+main > .section > * { position: relative; z-index: 2; }
+.site-header, .site-footer { position: relative; z-index: 3; }
+.ambient-field { position: fixed; inset: 0; z-index: 1; pointer-events: none; opacity: var(--field-opacity, .12); mask-image: linear-gradient(100deg, transparent 22%, #000 100%); -webkit-mask-image: linear-gradient(100deg, transparent 22%, #000 100%); transition: opacity 1.2s ease; }
+.ambient-field:empty { display: none; }
+.ambient-field #shader-canvas { width: 100%; height: 100%; }
+.visual-journey { position: fixed; bottom: 18px; right: 24px; z-index: 5; display: flex; align-items: center; gap: 14px; padding: 5px 5px 5px 16px; background: #f7f8f0f5; color: #263e30; border: 1px solid #aebda3; border-radius: 30px; box-shadow: 0 4px 20px #10221912; }
+.journey-label { font: 10px/1.5 Consolas, monospace; }
+.journey-toggle { min-height: 36px; padding: 8px 13px; border: 0; border-radius: 24px; background: #233b2c; color: #f4f6ec; font: 10px Arial, sans-serif; }
+.journey-toggle:disabled { opacity: .8; cursor: default; }
+.dialog-open .visual-journey { visibility: hidden; }
+.site-footer { padding-bottom: 90px; }
+@media(max-width:1100px) and (min-width:769px) { .site-header { gap: 16px; padding-inline: 30px; } .site-header nav { gap: 17px; } }
+@media(max-width:768px) { .hero-portrait { width: 76px; height: 94px; } .hero-identity { gap: 16px; margin-bottom: 26px; } .hero-identity .eyebrow { font-size: 9px; } .hero-identity .eyebrow span { font-size: 11px; } .visual-journey { right: 12px; bottom: 12px; gap: 9px; padding-left: 12px; max-width: calc(100% - 24px); } .journey-label { font-size: 9px; } .ambient-field { mask-image: linear-gradient(100deg, transparent, #000); -webkit-mask-image: linear-gradient(100deg, transparent, #000); } }
+@media(max-width:480px) { .site-header { flex-wrap: wrap; gap: 10px; padding-block: 16px; } .site-header nav { order: 3; width: 100%; justify-content: space-between; gap: 7px; } .site-header nav a { font-size: 10px; } }
+@media(prefers-reduced-motion:reduce) { .ambient-field { transition: none; } }
+@media print { .ambient-field, .visual-journey { display: none !important; } .hero-portrait { width: 64px; height: 78px; } .site-footer { padding-bottom: 0; } }

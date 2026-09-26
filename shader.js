@@ -6,6 +6,21 @@
   const scene = canvas.closest('.hero-system');
   const controls = scene.querySelector('.shader-controls');
   const button = scene.querySelector('.motion-toggle');
+  const home = canvas.parentElement;
+  const ambient = document.querySelector('.ambient-field');
+  const journey = document.querySelector('.visual-journey');
+  const journeyButton = journey.querySelector('button');
+  const chapters = [
+    { element: document.querySelector('.hero'), mode: 0, label: 'Introduction', strength: .5, speed: 1, opacity: .12 },
+    { element: document.getElementById('work'), mode: 0, label: 'Work · Flow', strength: .4, speed: .55, opacity: .12 },
+    { element: document.getElementById('games'), mode: 1, label: 'Game Development · Terrain', strength: .7, speed: .65, opacity: .32 },
+    { element: document.getElementById('research'), mode: 2, label: 'Research · Signal', strength: .4, speed: .35, opacity: .12 },
+    { element: document.getElementById('approach'), mode: 0, label: 'Approach · Flow', strength: .3, speed: .3, opacity: .1 },
+    { element: document.getElementById('experience'), mode: 0, label: 'Experience · Steady flow', strength: .15, speed: .18, opacity: .08 },
+    { element: document.getElementById('contact'), mode: 0, label: 'Contact · Calm', strength: .05, speed: .08, opacity: .14 }
+  ];
+  let chapter = 0, chapterFrame = 0, speed = 1;
+  let weights = [1, 0, 0], targetWeights = [1, 0, 0];
   const preference = matchMedia('(prefers-reduced-motion: reduce)');
   let gl, program, buffer, uniforms;
   let frame = 0, last = 0, elapsed = 0, visible = true, paused = false, lost = false;
@@ -20,7 +35,7 @@
     uniform vec2 resolution;
     uniform vec2 pointer;
     uniform float time;
-    uniform float mode;
+    uniform vec3 weights;
     uniform float intensity;
     float hash(vec2 p){return fract(sin(dot(p,vec2(127.1,311.7)))*43758.5453);}
     float noise(vec2 p){
@@ -52,18 +67,12 @@
       float halo=exp(-abs(field-.52)*13.);
       vec3 dark=vec3(.055,.14,.115), ink=vec3(.36,.63,.42), light=vec3(.74,.92,.48);
       float strength=.12+field*.4+halo*.15;
-      if(mode>.5 && mode<1.5){
-        float ridge=sin(length(p+warp*.5)*7.-field*8.+t);
-        contour=contourLine(abs(ridge));
-        ink=vec3(.44,.62,.35);light=vec3(.81,.83,.51);
-        strength=.12+field*.35;
-      } else if(mode>1.5){
-        float wave=sin(p.x*6.+warp.x*4.+t)*cos(p.y*5.-warp.y*3.-t);
-        contour=contourLine(abs(wave));
-        ink=vec3(.31,.52,.73);light=vec3(.66,.53,.88);
-        strength=.1+abs(wave)*.19+halo*.2;
-      }
-      vec3 color=mix(dark,ink,strength)+light*contour*(.28+intensity*.28);
+      vec3 flow=mix(dark,ink,strength)+light*contour*(.28+intensity*.28);
+      float ridge=sin(length(p+warp*.5)*7.-field*8.+t);
+      vec3 terrain=mix(dark,vec3(.44,.62,.35),.12+field*.35)+vec3(.81,.83,.51)*contourLine(abs(ridge))*(.28+intensity*.28);
+      float wave=sin(p.x*6.+warp.x*4.+t)*cos(p.y*5.-warp.y*3.-t);
+      vec3 signal=mix(dark,vec3(.31,.52,.73),.1+abs(wave)*.19+halo*.2)+vec3(.66,.53,.88)*contourLine(abs(wave))*(.28+intensity*.28);
+      vec3 color=flow*weights.x+terrain*weights.y+signal*weights.z;
       float vignette=1.-smoothstep(.35,.95,length(uv-.5));
       color*=.7+.3*vignette;
       gl_FragColor=vec4(color,1.);
@@ -72,6 +81,7 @@
     cancelAnimationFrame(frame); frame = 0;
     canvas.hidden = true; controls.hidden = true;
     button.hidden = true;
+    journey.hidden = true;
     scene.querySelector('.shader-fallback-note').hidden = false;
     scene.dataset.renderer = 'static';
   }
@@ -94,10 +104,11 @@
       buffer = gl.createBuffer(); gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
       gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1,-1, 1,-1, -1,1, -1,1, 1,-1, 1,1]), gl.STATIC_DRAW);
       const position = gl.getAttribLocation(program, 'position'); gl.enableVertexAttribArray(position); gl.vertexAttribPointer(position, 2, gl.FLOAT, false, 0, 0);
-      uniforms = Object.fromEntries(['resolution','pointer','time','mode','intensity'].map(name => [name, gl.getUniformLocation(program, name)]));
+      uniforms = Object.fromEntries(['resolution','pointer','time','weights','intensity'].map(name => [name, gl.getUniformLocation(program, name)]));
       canvas.hidden = false; controls.hidden = false; button.hidden = false;
       scene.querySelector('.shader-fallback-note').hidden = true;
       scene.dataset.renderer = 'webgl';
+      journey.hidden = chapter === 0;
       return true;
     } catch { fallback(); return false; }
   }
@@ -107,7 +118,7 @@
     gl.viewport(0, 0, canvas.width, canvas.height);
     gl.uniform2f(uniforms.resolution, canvas.width, canvas.height);
     gl.uniform2f(uniforms.pointer, pointer[0], pointer[1]);
-    gl.uniform1f(uniforms.time, elapsed / 1000); gl.uniform1f(uniforms.mode, mode); gl.uniform1f(uniforms.intensity, intensity);
+    gl.uniform1f(uniforms.time, elapsed / 1000); gl.uniform3fv(uniforms.weights, weights); gl.uniform1f(uniforms.intensity, intensity);
     gl.drawArrays(gl.TRIANGLES, 0, 6);
   }
   function loop(timestamp) {
@@ -115,7 +126,10 @@
     if (stopped()) { last = 0; return; }
     // Cap at 30fps; no catch-up work after a hidden tab or long frame.
     if (!last || timestamp - last >= 1000 / 30) {
-      if (last) elapsed += Math.min(timestamp - last, 80);
+      const delta = last ? Math.min(timestamp - last, 80) : 33;
+      elapsed += delta * speed;
+      const blend = 1 - Math.exp(-delta / 550);
+      weights = weights.map((value, i) => value + (targetWeights[i] - value) * blend);
       last = timestamp; draw();
     }
     frame = requestAnimationFrame(loop);
@@ -124,6 +138,9 @@
     button.disabled = preference.matches;
     button.textContent = preference.matches ? 'Reduced motion' : paused ? 'Resume motion ▷' : 'Pause motion Ⅱ';
     button.setAttribute('aria-pressed', String(paused || preference.matches));
+    journeyButton.disabled = preference.matches;
+    journeyButton.textContent = preference.matches ? 'Reduced motion' : paused ? 'Resume visuals' : 'Pause visuals';
+    journeyButton.setAttribute('aria-pressed', String(paused || preference.matches));
     if (stopped()) { cancelAnimationFrame(frame); frame = 0; last = 0; draw(); }
     else if (!frame && scene.dataset.renderer === 'webgl') frame = requestAnimationFrame(loop);
   }
@@ -135,9 +152,39 @@
     draw();
   }
   if (!initialize()) return;
+  function selectMode(value) {
+    mode = value; targetWeights = [0, 1, 2].map(i => i === mode ? 1 : 0);
+    if (stopped()) weights = [...targetWeights];
+    scene.querySelectorAll('[data-field]').forEach(item => item.setAttribute('aria-pressed', String(Number(item.dataset.field) === mode)));
+  }
+  function updateChapter() {
+    chapterFrame = 0;
+    // Read layout once per scroll frame. The upper third of the viewport is the reading position.
+    const readingLine = innerHeight * .32;
+    let next = 0;
+    chapters.forEach((item, i) => { if (item.element.getBoundingClientRect().top <= readingLine) next = i; });
+    if (scrollY + innerHeight >= document.documentElement.scrollHeight - 2) next = chapters.length - 1;
+    if (next === chapter) return;
+    chapter = next;
+    const state = chapters[chapter];
+    document.body.dataset.visualChapter = state.element.id || 'intro';
+    document.body.style.setProperty('--field-opacity', state.opacity);
+    journey.querySelector('.journey-label').textContent = state.label;
+    journey.hidden = chapter === 0 || scene.dataset.renderer !== 'webgl';
+    (chapter === 0 ? home : ambient).prepend(canvas);
+    visible = true; pointer = [.5, .5]; speed = state.speed; intensity = state.strength;
+    document.getElementById('field-intensity').value = Math.round(intensity * 100);
+    selectMode(state.mode); resize(); sync();
+  }
+  const scheduleChapter = () => { if (!chapterFrame) chapterFrame = requestAnimationFrame(updateChapter); };
+  window.addEventListener('scroll', scheduleChapter, { passive: true });
+  window.addEventListener('resize', scheduleChapter, { passive: true });
+  // Filters and expandable project details alter section positions without scrolling.
+  if ('ResizeObserver' in window) new ResizeObserver(scheduleChapter).observe(document.querySelector('main'));
   button.addEventListener('click', () => { paused = !paused; sync(); });
+  journeyButton.addEventListener('click', () => { paused = !paused; sync(); });
   scene.querySelectorAll('[data-field]').forEach(item => item.addEventListener('click', () => {
-    mode = Number(item.dataset.field); scene.querySelectorAll('[data-field]').forEach(other => other.setAttribute('aria-pressed', String(item === other))); draw();
+    selectMode(Number(item.dataset.field)); draw();
   }));
   document.getElementById('field-intensity').addEventListener('input', event => { intensity = Number(event.target.value) / 100; draw(); });
   const updatePointer = event => {
@@ -151,9 +198,9 @@
   preference.addEventListener('change', sync); document.addEventListener('visibilitychange', sync); document.addEventListener('portfolio:dialog', sync);
   canvas.addEventListener('webglcontextlost', event => { event.preventDefault(); lost = true; savedTime = elapsed; fallback(); });
   canvas.addEventListener('webglcontextrestored', () => { lost = false; elapsed = savedTime; if (initialize()) { resize(); sync(); } });
-  if ('IntersectionObserver' in window) new IntersectionObserver(entries => { visible = entries[0].isIntersecting; sync(); }, { threshold: 0 }).observe(canvas);
+  if ('IntersectionObserver' in window) new IntersectionObserver(entries => { visible = chapter > 0 || entries[0].isIntersecting; sync(); }, { threshold: 0 }).observe(home);
   if ('ResizeObserver' in window) new ResizeObserver(resize).observe(canvas); else window.addEventListener('resize', resize);
-  window.addEventListener('pagehide', () => { cancelAnimationFrame(frame); frame = 0; last = 0; });
-  window.addEventListener('pageshow', sync);
-  resize(); sync();
+  window.addEventListener('pagehide', () => { cancelAnimationFrame(frame); cancelAnimationFrame(chapterFrame); frame = 0; chapterFrame = 0; last = 0; });
+  window.addEventListener('pageshow', () => { updateChapter(); sync(); });
+  resize(); updateChapter(); sync();
 })();
