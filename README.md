@@ -1,53 +1,56 @@
 # Genreid Isaiah Estrada — Portfolio
 
-A static portfolio for applied AI, business technology, research, and game development. Plain HTML, CSS, JavaScript, and WebGL; no paid assets, frameworks, build step, or external runtime dependencies.
+My portfolio for applied AI, business technology, research, and game development. Built with HTML, CSS, JavaScript, and an optional WebGL background.
 
-## Local preview
+[View the portfolio](https://estradagenreid-ph.github.io/)
 
-Serve the repository root with any static HTTP server. GitHub Pages serves the same files. `resume.html` is a printable professional overview; the original CV/resume PDFs and full postal address are not published.
+**Instructions:**
 
-## Project media
+1. Clone the repository and enter its folder:
 
-The Featured Projects section highlights PROJECT ALFHA before the complete project grid. It uses the existing `alfha` gallery and repository link, so the gallery retains one metadata entry per project. Add future highlights as featured articles pointing to existing gallery IDs. The hero action leads to this section; the Work navigation link still leads to the complete grid.
+```sh
+git clone https://github.com/estradagenreid-ph/estradagenreid-ph.github.io.git
+cd estradagenreid-ph.github.io
+```
 
-The header uses a plain Genreid Estrada wordmark. `assets/site-icon.svg` is a simple serif E browser icon; the former `favicon.svg` monogram is removed. All four navigation links remain visible on mobile, with a dedicated navigation row at narrower widths.
+2. Start a local server from that folder. With Python installed:
 
-All 28 uploaded project files are represented in the gallery. The source files under `images/` are preserved. Optimized 900px WebP previews in `assets/gallery/` keep gallery browsing lightweight. Full-resolution PNGs load when their gallery slide is selected. The two large Pong GIFs load **only** after selecting Play clip; Stop clip restores the still poster. Closing, navigating, hiding the tab, or enabling reduced motion stops playback. Game concept artwork is explicitly labeled as placeholder artwork, not gameplay.
+```sh
+python -m http.server 8000 --bind 127.0.0.1
+```
 
-| Project | Original folder | Media |
-| --- | --- | --- |
-| Deterministic Hierarchical Chunking | images/Deterministic Hierarchical Chunking | 4 screenshots |
-| InsightBot | images/InsightBot | 2 screenshots |
-| AI Knowledge Base | images/Knowledge_base | 4 screenshots |
-| Learning through Pong | images/Pong | 2 animated GIFs |
-| PROJECT ALFHA | images/Project ALFHA | 3 screenshots |
-| SEO Sim | images/SEO | 2 screenshots |
-| Corporate SWOT Advisor | images/SWOT Analyzer | 3 screenshots |
-| Canada Trust Wealth | images/Trustwealth | 4 screenshots |
-| VectorHire | images/VectorHire | 1 screenshot |
-| WealthMind AI | images/Wealthmind | 3 screenshots |
-| Project AGIMAT / Project Arena | assets/agimat.svg / assets/arena.svg | 2 original vector placeholders |
+3. Open [localhost:8000](http://localhost:8000) in your browser. Stop the server with Ctrl+C.
 
-Gallery metadata is in each card's `.gallery-items` links in `index.html`: `href` points to the original, `data-caption` names the scene, `data-kind` labels its provenance, and the nested image is the optimized preview. GIF entries have `data-animation="true"` and `data-poster`. Add media here to include it in per-project and all-project views automatically. Use the project's existing `data-gallery-id`; put verified source links in `.repo-link`. Only the three verified public project repositories are linked (chunking, Pong, ALFHA).
+There is no package installation or build step. Python is only needed for this preview command; any static HTTP server also works. GitHub Pages serves the same files.
 
-The gallery provides thumbnails, a project selector, previous/next, arrow/Home/End keys, swipe navigation, zoom with scrolling, original-file links, Escape-to-close, and focus restoration. Native details and original-image links remain usable without JavaScript.
+**FILES:**
 
-## Interactive visual
+| File | What it does |
+| --- | --- |
+| `index.html` | Main portfolio, project descriptions, repository links, and gallery entries. |
+| `resume.html` | Professional overview with a print/save-as-PDF action. |
+| `style.css` | Layout, mobile styles, gallery styles, and print formatting. |
+| `script.js` | Project filtering, gallery navigation, and perspective controls. |
+| `shader.js` | Procedural WebGL background with a pause control and reduced-motion support. |
+| `assets/` | Icons, vector artwork, portrait preview, and optimized WebP gallery images. |
+| `images/` | Original project screenshots, portrait, and Pong GIFs. |
 
-`shader.js` renders an original fragment shader: four-octave fractional Brownian noise with domain warping, signed contour distance, radial terrain, and wave interference. Derivative-based antialiasing is used where supported. Flow, Terrain, and Signal fields follow the content being read, without a visible shader demo.
+**TO UPDATE THE PORTFOLIO:**
 
-Performance limits: one render pass, no textures or post-processing, 30fps cap, device pixel ratio capped at 1.25, backing resolution at most 800 × 520. A single canvas supplies a softly masked background after the introduction. Rendering stops in the portrait-led introduction, in a hidden tab, or behind an open gallery. Pause freezes automatic motion. Reduced-motion preferences produce a static frame, and still updates when the chapter changes. Unsupported WebGL or failed compilation uses the existing static section backgrounds; lost contexts fall back and can restore.
+Edit the copy and gallery links in `index.html`. Gallery entries live in each card's `.gallery-items` links: `href` points to the original image, `data-caption` describes it, and the nested image provides the lightweight preview. Keep the existing `data-gallery-id` for each project. GIF entries use `data-animation="true"` and `data-poster`.
 
-The reading position (upper third of the viewport) selects the chapter: Flow for applied work and approach, Terrain for game worlds, Signal for research, then progressively slower Flow for experience and contact. Field weights crossfade over time; chapter opacity keeps text on stable, readable surfaces. A compact pause control is available while the background is active. Paused and reduced-motion modes update once on chapter changes without continuous animation. Scroll events schedule a single layout read per animation frame; no scroll interception.
+When changing CSS or JavaScript, update the version in the matching asset URLs on both HTML pages. Keep project media in Git; these files are part of the site.
 
-Academic applications (InsightBot, Canada Trust Wealth, VectorHire, SEO Sim, Corporate SWOT Advisor, and WealthMind AI) are credited to Google AI Studio. Pong retains its Python/NEAT/PyGame attribution. The full-size introduction portrait uses images/Portrait.png. Both City of Maple Ridge roles began in April 2025, as corrected by the owner.
+**ACCESSIBILITY:**
 
-## Editing
+The gallery supports keyboard navigation, Escape-to-close, focus restoration, and original-image links. Reduced motion stops animation. Pong clips load only when Play clip is selected. If WebGL is unavailable, the site uses static backgrounds. Game concept artwork is labeled as placeholder artwork.
 
-- `index.html`: concise portfolio copy, gallery metadata, game projects, research, experience.
-- `resume.html`: professional overview and print/save-PDF action.
-- `style.css`: layout, gallery, responsive and print styles.
-- `script.js`: gallery, project filtering, and perspective controls.
-- `shader.js`: optional procedural WebGL visual.
+**TOOLS & ACKNOWLEDGMENTS:**
 
-Both HTML pages use versioned CSS/JavaScript URLs. Change their version together when those files change so returning visitors do not combine new markup with old cached styles. The latest CV/resume supplied by the owner informs career content; current user instructions and project media inform game concepts and development updates. No performance or commercial outcomes are invented.
+Codex helped me build this portfolio and revise its documentation. The site itself does not call an AI model or require an API key.
+
+The academic apps shown in the portfolio—InsightBot, Canada Trust Wealth, VectorHire, SEO Sim, Corporate SWOT Advisor, and WealthMind AI—were built with Google AI Studio, as credited in their project cards. The Pong project uses Python, Pygame, and NEAT-Python, with its own credits in [the project README](https://github.com/estradagenreid-ph/neat_pong_power_up).
+
+**LOCAL FILES:**
+
+`.gitignore` excludes local environment files, credentials, editor files, and preview artifacts. Personal CV/resume PDFs and full postal addresses are not part of the published site.

@@ -1,0 +1,27 @@
+# Local configuration and credentials
+.env
+.env.*
+!.env.example
+!.env.sample
+.streamlit/secrets.toml
+credentials.json
+token.json
+*.pem
+*.key
+.pypirc
+
+# Local tools and operating system files
+.venv/
+venv/
+__pycache__/
+*.py[cod]
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+Desktop.ini
+*.log
+
+# Local preview exports; site assets and original media stay tracked
+/preview-output/
+/screenshots-local/
